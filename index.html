@@ -105,23 +105,22 @@
   </div>
 
   <!-- Crop & Preview Section -->
-  <div id="editorSection" class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-    <!-- Cropper -->
-    <div class="bg-gray-800 p-4 rounded-xl shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Adjust Crop Area</h2>
-      <div class="aspect-video overflow-hidden rounded-lg border border-gray-600">
-        <img id="image" class="max-w-full h-auto block mx-auto" alt="Uploaded Image" />
-      </div>
-    </div>
-
-    <!-- Preview -->
-    <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
-      <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
-      <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
-        <canvas id="previewCanvas" width="960" height="540"></canvas>
-      </div>
+<div id="editorSection" class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 hidden mx-auto items-center">
+  <!-- Cropper -->
+  <div class="bg-gray-800 p-4 rounded-xl shadow-md">
+    <h2 class="text-lg font-semibold mb-2">Adjust Crop Area</h2>
+    <div class="aspect-video overflow-hidden rounded-lg border border-gray-600">
+      <img id="image" class="max-w-full h-auto block mx-auto" alt="Uploaded Image" />
     </div>
   </div>
+  <!-- Preview -->
+  <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
+    <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
+    <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
+      <canvas id="previewCanvas" width="960" height="540"></canvas>
+    </div>
+  </div>
+</div>
 
   <!-- Crop Button -->
   <div id="actionButtons" class="mt-6 hidden text-center">
