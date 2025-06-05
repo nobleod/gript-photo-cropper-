@@ -84,7 +84,7 @@
 
   <!-- Crop Button -->
   <div id="actionButtons" class="mt-6 hidden text-center">
-    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-dark" aria-label="Crop & download image as JPEG">
+    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-dark" aria-label="Crop and download">
       Crop & Download JPEG
     </button>
   </div>
@@ -221,11 +221,12 @@
         if (currentFileType === "image/jpeg" && (title || caption)) {
           try {
             let zeroth = {};
-            if (title) {
-              zeroth[piexif.ImageIFD.ImageDescription] = title;
-            }
             if (caption) {
-              zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
+              zeroth[piexif.ImageIFD.ImageDescription] = caption; // WordPress reads this as caption
+              zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Windows XP/Explorer
+            }
+            if (title) {
+              zeroth[piexif.ImageIFD.DocumentName] = title; // Archive/reference
             }
             const exifBytes = piexif.dump({ "0th": zeroth });
             dataUrl = piexif.insert(exifBytes, dataUrl);
