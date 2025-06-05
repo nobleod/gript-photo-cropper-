@@ -221,12 +221,12 @@
         if (currentFileType === "image/jpeg" && (title || caption)) {
           try {
           let zeroth = {};
-if (caption) {
-  zeroth[piexif.ImageIFD.ImageDescription] = caption; // WordPress reads this as caption
-  zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Windows XP/Explorer
-}
 if (title) {
-  zeroth[piexif.ImageIFD.DocumentName] = title; // Archive/reference
+  zeroth[piexif.ImageIFD.ImageDescription] = title; // Write title to Image Description
+  zeroth[piexif.ImageIFD.DocumentName] = title;     // (optional) keep DocumentName
+}
+if (caption) {
+  zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Keep caption in XPComment
 }
 const exifBytes = piexif.dump({ "0th": zeroth });
 dataUrl = piexif.insert(exifBytes, dataUrl);
