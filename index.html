@@ -96,15 +96,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
   <script>
-    // FIXED: Adds null terminator to be compatible with EXIF XP fields
+    // UTF-16LE with null terminator for XP fields
     function encodeToUTF16LE(str) {
       const buf = [];
       for (let i = 0; i < str.length; i++) {
         const code = str.charCodeAt(i);
         buf.push(code & 0xff, code >> 8);
       }
-      // Add null terminator (2 bytes for UTF-16LE)
-      buf.push(0x00, 0x00);
+      buf.push(0x00, 0x00); // null terminator
       return buf;
     }
 
@@ -225,10 +224,10 @@
         if (currentFileType === "image/jpeg" && caption) {
           try {
             let zeroth = {};
-            // Do NOT include title in metadata
-            if (caption) {
-              zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Only keep caption in metadata
-            }
+            // Set for Microsoft/Windows
+            zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
+            // Set for WordPress/media libraries
+            zeroth[piexif.ImageIFD.ImageDescription] = caption;
             const exifBytes = piexif.dump({ "0th": zeroth });
             dataUrl = piexif.insert(exifBytes, dataUrl);
           } catch (metadataError) {
