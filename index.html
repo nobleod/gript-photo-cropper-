@@ -1,9 +1,8 @@
-<xaiArtifact artifact_id="ebad7a98-6d4f-4ac4-95b4-5c8f0cfd574d" title="index.html" contentType="text/html">
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photo Cropper</title>
 
   <!-- Tailwind CSS -->
@@ -26,112 +25,76 @@
     }
   </script>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Cropper CSS -->
+  <!-- Fonts and Cropper Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
 
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-
-    /* Centered and glowing crop area */
-    .cropper-view-box {
-      outline: 3px dashed #ffffff !important;
-      outline-offset: -3px;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
-    }
-
-    .cropper-face {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-    }
-
-    .cropper-line,
-    .cropper-point {
-      background-color: #ffffff !important;
-    }
-
-    .cropper-point.point-se,
-    .cropper-point.point-sw,
-    .cropper-point.point-nw,
-    .cropper-point.point-ne {
-      width: 12px;
-      height: 12px;
-      background: #6366f1;
-      border: 2px solid #fff;
-      box-shadow: 0 0 4px #6366f1;
-      border-radius: 50%;
-    }
-
-    #uploadSection {
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @media (max-width: 640px) {
-      .cropper-point {
-        width: 10px;
-        height: 10px;
-      }
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-    }
+    body { font-family: 'Poppins', sans-serif; }
+    .cropper-view-box { outline: 3px dashed #fff !important; outline-offset: -3px; }
+    .cropper-point { background-color: #6366f1 !important; border-radius: 50%; width: 12px; height: 12px; }
+    .cropper-face { background-color: rgba(255, 255, 255, 0.05) !important; cursor: move !important; }
+    canvas { width: 100%; height: auto; }
   </style>
 </head>
 <body class="bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen flex flex-col px-4">
 
   <!-- Header -->
   <div class="text-center mt-8">
-<img src="GRIPT LOGO.png" alt="Gript Logo" class="w-17 h-12 sm:w-19 sm:h-14 mx-auto mb-2 rounded-full shadow-lg">
+    <img src="../GRIPT METADATA SITE/images/GRIPT LOGO.png" alt="Gript Logo" class="w-17 h-12 mx-auto mb-2 rounded-full shadow-lg">
     <h1 class="text-4xl font-semibold tracking-tight">Photo Cropper</h1>
-    <p class="text-gray-400 mt-1">Crop your image precisely to 960x540</p>
+    <p class="text-gray-400 mt-1">Crop any image to 960x540 and export as JPEG with metadata</p>
   </div>
 
   <!-- Upload Area -->
-<div id="uploadSection" class="w-full max-w-md mx-auto mb-12 text-center mt-12">
-  <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg w-full">
+  <div id="uploadSection" class="w-full max-w-md mx-auto mb-6 text-center">
+    <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-lg w-full">
       <label class="block cursor-pointer hover:border-brand transition-all duration-300 border-2 border-dashed border-gray-600 rounded-lg p-6">
-        <span class="text-sm text-gray-400">Click or drag an image here</span>
-        <input type="file" accept="image/*" class="hidden" id="fileInput" aria-label="Upload photo" />
+        <span class="text-sm text-gray-400">Click or drag a JPEG or PNG here</span>
+        <input type="file" accept="image/jpeg,image/png" class="hidden" id="fileInput" aria-label="Upload photo" />
       </label>
     </div>
   </div>
 
-  <!-- Crop & Preview Section -->
-<div id="editorSection" class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 hidden mx-auto items-center">
-  <!-- Cropper -->
-  <div class="bg-gray-800 p-4 rounded-xl shadow-md">
-    <h2 class="text-lg font-semibold mb-2">Adjust Crop Area</h2>
-    <div class="aspect-video overflow-hidden rounded-lg border border-gray-600">
-      <img id="image" class="max-w-full h-auto block mx-auto" alt="Uploaded Image" />
+  <!-- Editor Section -->
+  <div id="editorSection" class="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 hidden justify-center">
+    <div class="bg-gray-800 p-4 rounded-xl shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Adjust Crop Area</h2>
+      <div class="aspect-video overflow-hidden rounded-lg border border-gray-600">
+        <img id="image" class="max-w-full h-auto block mx-auto" alt="Uploaded Image" />
+      </div>
+    </div>
+
+    <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
+      <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
+      <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
+        <canvas id="previewCanvas" width="960" height="540" aria-label="Live preview of cropped image"></canvas>
+      </div>
+
+      <!-- Metadata Inputs -->
+      <div class="mt-4 w-full max-w-sm text-left">
+        <label class="block mb-2 text-sm font-medium text-gray-300" for="titleInput">Image Title</label>
+        <input id="titleInput" type="text" placeholder="Enter title..." class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
+
+        <label class="block mt-4 mb-2 text-sm font-medium text-gray-300" for="captionInput">Caption</label>
+        <input id="captionInput" type="text" placeholder="Enter caption..." class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
+      </div>
     </div>
   </div>
-  <!-- Preview -->
-  <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
-    <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
-    <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
-      <canvas id="previewCanvas" width="960" height="540"></canvas>
-    </div>
-  </div>
-</div>
 
   <!-- Crop Button -->
   <div id="actionButtons" class="mt-6 hidden text-center">
-    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-dark animate-bounce">
-      Crop & Download
+    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-dark" aria-label="Crop & download image as JPEG">
+      Crop & Download JPEG
     </button>
   </div>
 
-  <!-- Cropper.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <!-- Loading Indicator -->
+  <div id="loading" class="hidden text-center text-gray-400 mt-4">Processing...</div>
 
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
   <script>
     const fileInput = document.getElementById('fileInput');
     const image = document.getElementById('image');
@@ -139,12 +102,23 @@
     const actionButtons = document.getElementById('actionButtons');
     const previewCanvas = document.getElementById('previewCanvas');
     const ctx = previewCanvas.getContext('2d');
+    const titleInput = document.getElementById('titleInput');
+    const captionInput = document.getElementById('captionInput');
+    const uploadArea = document.querySelector('#uploadSection label');
+    const loading = document.getElementById('loading');
     let cropper;
 
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file || !file.type.startsWith('image/')) {
-        alert('Please upload a valid image file.');
+    // Set default caption text
+    captionInput.value = "C:";
+
+    // Sanitize input to remove non-printable characters
+    function sanitizeInput(str) {
+      return str.replace(/[^\x20-\x7E]/g, '').trim(); // Remove non-printable ASCII characters
+    }
+
+    function handleFile(file) {
+      if (!file || !file.type.match(/^image\/(jpeg|png)$/)) {
+        alert('Only JPEG and PNG images are allowed.');
         return;
       }
 
@@ -152,49 +126,160 @@
       reader.onload = () => {
         image.src = reader.result;
         image.onload = () => {
+          console.log('Image loaded successfully:', image.src);
           if (cropper) cropper.destroy();
+          ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
           cropper = new Cropper(image, {
             viewMode: 1,
             aspectRatio: 16 / 9,
             autoCropArea: 1,
-            responsive: true,
             background: false,
-            zoomable: true,
-            movable: true,
             crop() {
               const canvasData = cropper.getCroppedCanvas({ width: 960, height: 540 });
-              ctx.clearRect(0, 0, 960, 540);
-              ctx.drawImage(canvasData, 0, 0, 960, 540);
+              if (canvasData) {
+                ctx.clearRect(0, 0, 960, 540);
+                ctx.drawImage(canvasData, 0, 0, 960, 540);
+              } else {
+                console.warn('Failed to get cropped canvas in crop event');
+              }
             }
           });
-
           editorSection.classList.remove('hidden');
           actionButtons.classList.remove('hidden');
         };
+        image.onerror = () => {
+          alert('Failed to load image. Please try another file.');
+          console.error('Image load error');
+          fileInput.value = '';
+          editorSection.classList.add('hidden');
+          actionButtons.classList.add('hidden');
+        };
+      };
+      reader.onerror = () => {
+        alert('Error reading file. Please try again.');
+        console.error('FileReader error');
+        fileInput.value = '';
       };
       reader.readAsDataURL(file);
+    }
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('border-brand');
     });
 
-    document.getElementById('cropBtn').addEventListener('click', () => {
-      if (!cropper) return;
-      const cropped = cropper.getCroppedCanvas({ width: 960, height: 540 });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('border-brand');
+    });
 
-      cropped.toBlob(blob => {
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('border-brand');
+      const files = e.dataTransfer.files;
+      if (files.length > 1) {
+        alert('Please drop only one file.');
+        return;
+      }
+      handleFile(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFile(e.target.files[0]);
+      e.target.value = ''; // Reset file input for consecutive uploads
+    });
+
+    document.getElementById('cropBtn').addEventListener('click', async () => {
+      console.log('Crop button clicked at', new Date().toISOString());
+      if (!cropper) {
+        alert('No image loaded.');
+        console.error('No cropper instance available');
+        return;
+      }
+
+      const canvas = cropper.getCroppedCanvas({ width: 960, height: 540 });
+      if (!canvas) {
+        alert('Failed to get cropped canvas.');
+        console.error('Failed to generate cropped canvas');
+        return;
+      }
+
+      loading.classList.remove('hidden');
+
+      try {
+        // Clear image.onerror to prevent false alerts during reset
+        image.onerror = null;
+
+        // Generate JPEG data URL
+        let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        console.log('Data URL generated:', dataUrl.substring(0, 50) + '...');
+
+        // Prepare metadata
+        const title = sanitizeInput(titleInput.value).slice(0, 255); // Limit to 255 chars
+        const caption = sanitizeInput(captionInput.value).slice(0, 1000); // Limit to 1000 chars
+        console.log('Metadata to embed:', { title, caption });
+
+        if (title || caption) {
+          try {
+            let zeroth = {};
+            if (title) {
+              zeroth[piexif.ImageIFD.ImageDescription] = title;
+            }
+            if (caption) {
+              zeroth[piexif.ImageIFD.XPComment] = caption;
+            }
+            console.log('EXIF object:', zeroth);
+            const exifBytes = piexif.dump({ "0th": zeroth });
+            console.log('EXIF bytes generated, length:', exifBytes.length);
+            dataUrl = piexif.insert(exifBytes, dataUrl);
+            console.log('Metadata embedded successfully');
+          } catch (metadataError) {
+            console.error('Metadata embedding failed:', metadataError.message, metadataError.stack);
+            alert('Warning: Could not embed metadata due to an error. The image will download without title/caption in metadata.');
+          }
+        } else {
+          console.log('No metadata provided, skipping embedding');
+        }
+
+        // Sanitize and set file name
+        let fileName = title ? title.replace(/[\\\/:*?"<>|]/g, '') : 'cropped_image';
+        fileName = fileName.trim() ? `${fileName}.jpg` : 'cropped_image.jpg';
+        console.log('File name for download:', fileName);
+
+        // Trigger download
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'cropped_image.jpg';
+        link.href = dataUrl;
+        link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-      }, 'image/jpeg');
+        console.log('Download triggered for file:', fileName);
+
+        // Delay reset to avoid race conditions
+        setTimeout(resetUI, 100);
+      } catch (error) {
+        alert('Error processing the image.');
+        console.error('Error in crop button handler:', error.message, error.stack);
+        setTimeout(resetUI, 100);
+      }
     });
+
+    function resetUI() {
+      fileInput.value = '';
+      titleInput.value = '';
+      captionInput.value = 'C:';
+      editorSection.classList.add('hidden');
+      actionButtons.classList.add('hidden');
+      loading.classList.add('hidden');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+      // Clear image source safely
+      image.onerror = null; // Ensure no error is triggered
+      image.src = '';
+      ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+      console.log('UI reset');
+    }
   </script>
-
-  <noscript>
-    <p class="text-red-500 mt-4 text-center">This app requires JavaScript. Please enable it in your browser.</p>
-  </noscript>
-
 </body>
 </html>
-</xaiArtifact>
