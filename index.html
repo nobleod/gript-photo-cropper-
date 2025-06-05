@@ -41,7 +41,7 @@
 
   <!-- Header -->
   <div class="text-center mt-8">
-    <img src="images/GRIPT_LOGO.png" alt="Gript Logo" class="w-17 h-12 mx-auto mb-2 rounded-full shadow-lg">
+<img src="images/GRIPT_LOGO.png" alt="Gript Logo" class="w-17 h-12 mx-auto mb-2 rounded-full shadow-lg">
     <h1 class="text-4xl font-semibold tracking-tight">Photo Cropper</h1>
     <p class="text-gray-400 mt-1">Crop any image to 960x540 and export as JPEG with metadata</p>
   </div>
@@ -64,20 +64,15 @@
         <img id="image" class="max-w-full h-auto block mx-auto" alt="Uploaded Image" />
       </div>
     </div>
-
     <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
       <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
       <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
         <canvas id="previewCanvas" width="960" height="540" aria-label="Live preview of cropped image"></canvas>
       </div>
-
       <!-- Metadata Inputs -->
       <div class="mt-4 w-full max-w-sm text-left">
         <label class="block mb-2 text-sm font-medium text-gray-300" for="titleInput">Image Title</label>
         <input id="titleInput" type="text" placeholder="Enter title..." class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
-
-        <label class="block mt-4 mb-2 text-sm font-medium text-gray-300" for="captionInput">Caption</label>
-        <input id="captionInput" type="text" placeholder="Enter caption..." class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
       </div>
     </div>
   </div>
@@ -96,17 +91,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
   <script>
-    // UTF-16LE with null terminator for XP fields
-    function encodeToUTF16LE(str) {
-      const buf = [];
-      for (let i = 0; i < str.length; i++) {
-        const code = str.charCodeAt(i);
-        buf.push(code & 0xff, code >> 8);
-      }
-      buf.push(0x00, 0x00); // null terminator
-      return buf;
-    }
-
     const fileInput = document.getElementById('fileInput');
     const image = document.getElementById('image');
     const editorSection = document.getElementById('editorSection');
@@ -114,18 +98,13 @@
     const previewCanvas = document.getElementById('previewCanvas');
     const ctx = previewCanvas.getContext('2d');
     const titleInput = document.getElementById('titleInput');
-    const captionInput = document.getElementById('captionInput');
     const uploadArea = document.querySelector('#uploadSection label');
     const loading = document.getElementById('loading');
     let cropper;
     let currentFileType = null;
 
-    // Set default caption text
-    captionInput.value = "C:";
-
-    // Sanitize input to remove non-printable characters
     function sanitizeInput(str) {
-      return str.replace(/[^\x20-\x7E]/g, '').trim(); // Remove non-printable ASCII characters
+      return str.replace(/[^\x20-\x7E]/g, '').trim();
     }
 
     function handleFile(file) {
@@ -217,26 +196,8 @@
         let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
 
         const title = sanitizeInput(titleInput.value).slice(0, 255);
-        const caption = sanitizeInput(captionInput.value).slice(0, 1000);
 
-        // Only attempt EXIF embedding for JPEGs
-        // TITLE is NOT embedded in metadata; only used for file name!
-        if (currentFileType === "image/jpeg" && caption) {
-          try {
-            let zeroth = {};
-            // Set for Microsoft/Windows
-            zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
-            // Set for WordPress/media libraries
-            zeroth[piexif.ImageIFD.ImageDescription] = caption;
-            const exifBytes = piexif.dump({ "0th": zeroth });
-            dataUrl = piexif.insert(exifBytes, dataUrl);
-          } catch (metadataError) {
-            alert("Warning: Could not embed metadata due to an error. The image will download without caption in metadata.");
-            console.error('Metadata embedding failed:', metadataError);
-          }
-        } else if (currentFileType === "image/png" && (title || caption)) {
-          alert("Warning: Metadata embedding is only supported for JPEG images. The image will download without caption in metadata.");
-        }
+        // No caption at all.
 
         // Sanitize and set file name
         let fileName = title ? title.replace(/[\\\/:*?"<>|]/g, '') : 'cropped_image';
@@ -261,7 +222,6 @@
     function resetUI() {
       fileInput.value = '';
       titleInput.value = '';
-      captionInput.value = 'C:';
       editorSection.classList.add('hidden');
       actionButtons.classList.add('hidden');
       loading.classList.add('hidden');
