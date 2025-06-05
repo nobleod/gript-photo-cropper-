@@ -93,6 +93,14 @@
   <div id="loading" class="hidden text-center text-gray-400 mt-4">Processing...</div>
 
   <!-- Scripts -->
+  function encodeToUTF16LE(str) {
+  const buf = [];
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    buf.push(code & 0xff, code >> 8);
+  }
+  return buf;
+}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
   <script>
@@ -218,25 +226,22 @@
         const caption = sanitizeInput(captionInput.value).slice(0, 1000); // Limit to 1000 chars
         console.log('Metadata to embed:', { title, caption });
 
-        if (title || caption) {
-          try {
-            let zeroth = {};
-            if (title) {
-              zeroth[piexif.ImageIFD.ImageDescription] = title;
-            }
-            if (caption) {
-              zeroth[piexif.ImageIFD.XPComment] = caption;
-            }
-            console.log('EXIF object:', zeroth);
-            const exifBytes = piexif.dump({ "0th": zeroth });
-            console.log('EXIF bytes generated, length:', exifBytes.length);
-            dataUrl = piexif.insert(exifBytes, dataUrl);
-            console.log('Metadata embedded successfully');
-          } catch (metadataError) {
-            console.error('Metadata embedding failed:', metadataError.message, metadataError.stack);
-            alert('Warning: Could not embed metadata due to an error. The image will download without title/caption in metadata.');
-          }
-        } else {
+      if (title || caption) {
+  try {
+    let zeroth = {};
+    if (title) {
+      zeroth[piexif.ImageIFD.ImageDescription] = title;
+    }
+    if (caption) {
+      zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
+    }
+    const exifBytes = piexif.dump({ "0th": zeroth });
+    dataUrl = piexif.insert(exifBytes, dataUrl);
+  } catch (metadataError) {
+    // Only log error, do not alert the user
+    console.error('Metadata embedding failed:', metadataError);
+  }
+} else {
           console.log('No metadata provided, skipping embedding');
         }
 
