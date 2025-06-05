@@ -220,16 +220,16 @@
         // Only attempt EXIF embedding for JPEGs
         if (currentFileType === "image/jpeg" && (title || caption)) {
           try {
-            let zeroth = {};
-            if (caption) {
-              zeroth[piexif.ImageIFD.ImageDescription] = caption; // WordPress reads this as caption
-              zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Windows XP/Explorer
-            }
-            if (title) {
-              zeroth[piexif.ImageIFD.DocumentName] = title; // Archive/reference
-            }
-            const exifBytes = piexif.dump({ "0th": zeroth });
-            dataUrl = piexif.insert(exifBytes, dataUrl);
+          let zeroth = {};
+if (caption) {
+  zeroth[piexif.ImageIFD.ImageDescription] = caption; // WordPress reads this as caption
+  zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption); // Windows XP/Explorer
+}
+if (title) {
+  zeroth[piexif.ImageIFD.DocumentName] = title; // Archive/reference
+}
+const exifBytes = piexif.dump({ "0th": zeroth });
+dataUrl = piexif.insert(exifBytes, dataUrl);
           } catch (metadataError) {
             alert("Warning: Could not embed metadata due to an error. The image will download without title/caption in metadata.");
             console.error('Metadata embedding failed:', metadataError);
