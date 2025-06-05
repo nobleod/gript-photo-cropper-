@@ -93,17 +93,18 @@
   <div id="loading" class="hidden text-center text-gray-400 mt-4">Processing...</div>
 
   <!-- Scripts -->
-  function encodeToUTF16LE(str) {
-  const buf = [];
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    buf.push(code & 0xff, code >> 8);
-  }
-  return buf;
-}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
   <script>
+    function encodeToUTF16LE(str) {
+      const buf = [];
+      for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i);
+        buf.push(code & 0xff, code >> 8);
+      }
+      return buf;
+    }
+
     const fileInput = document.getElementById('fileInput');
     const image = document.getElementById('image');
     const editorSection = document.getElementById('editorSection');
@@ -115,6 +116,7 @@
     const uploadArea = document.querySelector('#uploadSection label');
     const loading = document.getElementById('loading');
     let cropper;
+    let currentFileType = null;
 
     // Set default caption text
     captionInput.value = "C:";
@@ -129,12 +131,12 @@
         alert('Only JPEG and PNG images are allowed.');
         return;
       }
+      currentFileType = file.type;
 
       const reader = new FileReader();
       reader.onload = () => {
         image.src = reader.result;
         image.onload = () => {
-          console.log('Image loaded successfully:', image.src);
           if (cropper) cropper.destroy();
           ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
           cropper = new Cropper(image, {
@@ -147,8 +149,6 @@
               if (canvasData) {
                 ctx.clearRect(0, 0, 960, 540);
                 ctx.drawImage(canvasData, 0, 0, 960, 540);
-              } else {
-                console.warn('Failed to get cropped canvas in crop event');
               }
             }
           });
@@ -157,7 +157,6 @@
         };
         image.onerror = () => {
           alert('Failed to load image. Please try another file.');
-          console.error('Image load error');
           fileInput.value = '';
           editorSection.classList.add('hidden');
           actionButtons.classList.add('hidden');
@@ -165,7 +164,6 @@
       };
       reader.onerror = () => {
         alert('Error reading file. Please try again.');
-        console.error('FileReader error');
         fileInput.value = '';
       };
       reader.readAsDataURL(file);
@@ -197,58 +195,51 @@
     });
 
     document.getElementById('cropBtn').addEventListener('click', async () => {
-      console.log('Crop button clicked at', new Date().toISOString());
       if (!cropper) {
         alert('No image loaded.');
-        console.error('No cropper instance available');
         return;
       }
 
       const canvas = cropper.getCroppedCanvas({ width: 960, height: 540 });
       if (!canvas) {
         alert('Failed to get cropped canvas.');
-        console.error('Failed to generate cropped canvas');
         return;
       }
 
       loading.classList.remove('hidden');
 
       try {
-        // Clear image.onerror to prevent false alerts during reset
         image.onerror = null;
 
-        // Generate JPEG data URL
+        // Always export as JPEG for download
         let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-        console.log('Data URL generated:', dataUrl.substring(0, 50) + '...');
 
-        // Prepare metadata
-        const title = sanitizeInput(titleInput.value).slice(0, 255); // Limit to 255 chars
-        const caption = sanitizeInput(captionInput.value).slice(0, 1000); // Limit to 1000 chars
-        console.log('Metadata to embed:', { title, caption });
+        const title = sanitizeInput(titleInput.value).slice(0, 255);
+        const caption = sanitizeInput(captionInput.value).slice(0, 1000);
 
-      if (title || caption) {
-  try {
-    let zeroth = {};
-    if (title) {
-      zeroth[piexif.ImageIFD.ImageDescription] = title;
-    }
-    if (caption) {
-      zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
-    }
-    const exifBytes = piexif.dump({ "0th": zeroth });
-    dataUrl = piexif.insert(exifBytes, dataUrl);
-  } catch (metadataError) {
-    // Only log error, do not alert the user
-    console.error('Metadata embedding failed:', metadataError);
-  }
-} else {
-          console.log('No metadata provided, skipping embedding');
+        // Only attempt EXIF embedding for JPEGs
+        if (currentFileType === "image/jpeg" && (title || caption)) {
+          try {
+            let zeroth = {};
+            if (title) {
+              zeroth[piexif.ImageIFD.ImageDescription] = title;
+            }
+            if (caption) {
+              zeroth[piexif.ImageIFD.XPComment] = encodeToUTF16LE(caption);
+            }
+            const exifBytes = piexif.dump({ "0th": zeroth });
+            dataUrl = piexif.insert(exifBytes, dataUrl);
+          } catch (metadataError) {
+            alert("Warning: Could not embed metadata due to an error. The image will download without title/caption in metadata.");
+            console.error('Metadata embedding failed:', metadataError);
+          }
+        } else if (currentFileType === "image/png" && (title || caption)) {
+          alert("Warning: Metadata embedding is only supported for JPEG images. The image will download without title/caption in metadata.");
         }
 
         // Sanitize and set file name
         let fileName = title ? title.replace(/[\\\/:*?"<>|]/g, '') : 'cropped_image';
         fileName = fileName.trim() ? `${fileName}.jpg` : 'cropped_image.jpg';
-        console.log('File name for download:', fileName);
 
         // Trigger download
         const link = document.createElement('a');
@@ -257,9 +248,7 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        console.log('Download triggered for file:', fileName);
 
-        // Delay reset to avoid race conditions
         setTimeout(resetUI, 100);
       } catch (error) {
         alert('Error processing the image.');
@@ -279,11 +268,9 @@
         cropper.destroy();
         cropper = null;
       }
-      // Clear image source safely
-      image.onerror = null; // Ensure no error is triggered
+      image.onerror = null;
       image.src = '';
       ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-      console.log('UI reset');
     }
   </script>
 </body>
