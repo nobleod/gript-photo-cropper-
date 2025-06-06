@@ -1,3 +1,3 @@
 # gript-photo-cropper-
 
-960x540 photo cropping locally 
+1920 X 1080 photo cropping locally 
