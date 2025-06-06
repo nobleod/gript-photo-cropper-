@@ -41,9 +41,9 @@
 
   <!-- Header -->
   <div class="text-center mt-8">
-<img src="GRIPT LOGO.png" alt="Gript Logo" class="w-17 h-12 mx-auto mb-2 rounded-full shadow-lg">
+    <img src="GRIPT LOGO.png" alt="Gript Logo" class="w-17 h-12 mx-auto mb-2 rounded-full shadow-lg">
     <h1 class="text-4xl font-semibold tracking-tight">Photo Cropper</h1>
-    <p class="text-gray-400 mt-1">Crop any image to 960x540</p>
+    <p class="text-gray-400 mt-1">Crop any image to 1920x1080</p>
   </div>
 
   <!-- Upload Area -->
@@ -65,15 +65,15 @@
       </div>
     </div>
     <div class="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col items-center">
-      <h2 class="text-lg font-semibold mb-2">Live Preview (960x540)</h2>
+      <h2 class="text-lg font-semibold mb-2">Live Preview (1920x1080)</h2>
       <div class="rounded-lg overflow-hidden border border-gray-600 bg-black max-w-full">
-        <canvas id="previewCanvas" width="960" height="540" aria-label="Live preview of cropped image"></canvas>
+        <canvas id="previewCanvas" width="1920" height="1080" aria-label="Live preview of cropped image"></canvas>
       </div>
       <!-- Metadata Inputs -->
       <div class="mt-4 w-full max-w-sm text-left">
-       <label class="block mb-2 text-sm font-medium text-gray-300" for="titleInput">
-  Image Title <span class="text-gray-400 text-xs">(optional)</span>
-</label>
+        <label class="block mb-2 text-sm font-medium text-gray-300" for="titleInput">
+          Image Title <span class="text-gray-400 text-xs">(optional)</span>
+        </label>
         <input id="titleInput" type="text" placeholder="Enter title..." class="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white" />
       </div>
     </div>
@@ -81,7 +81,7 @@
 
   <!-- Crop Button -->
   <div id="actionButtons" class="mt-6 hidden text-center">
-    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-dark" aria-label="Crop & Download JPEG">
+    <button id="cropBtn" class="bg-brand hover:bg-brand-dark transition px-8 py-3 text-white font-semibold rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-dark" aria-label="Crop and Download">
       Crop & Download JPEG
     </button>
   </div>
@@ -128,10 +128,10 @@
             autoCropArea: 1,
             background: false,
             crop() {
-              const canvasData = cropper.getCroppedCanvas({ width: 960, height: 540 });
+              const canvasData = cropper.getCroppedCanvas({ width: 1920, height: 1080 });
               if (canvasData) {
-                ctx.clearRect(0, 0, 960, 540);
-                ctx.drawImage(canvasData, 0, 0, 960, 540);
+                ctx.clearRect(0, 0, 1920, 1080);
+                ctx.drawImage(canvasData, 0, 0, 1920, 1080);
               }
             }
           });
@@ -183,7 +183,7 @@
         return;
       }
 
-      const canvas = cropper.getCroppedCanvas({ width: 960, height: 540 });
+      const canvas = cropper.getCroppedCanvas({ width: 1920, height: 1080 });
       if (!canvas) {
         alert('Failed to get cropped canvas.');
         return;
